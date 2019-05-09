@@ -63,6 +63,24 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         present(pickerController, animated: true)
     }
     
+    func lookUpPerson(){
+        let dynamoDB = AWSDynamoDB.default()
+        let listTableInput = AWSDynamoDBListTablesInput()
+        dynamoDB.listTables(listTableInput!).continueWith { (task:AWSTask<AWSDynamoDBListTablesOutput>) -> Any? in
+            if let error = task.error as? NSError {
+                print("Error occurred: \(error)")
+                return nil
+            }
+            
+            let listTablesOutput = task.result
+            
+            for tableName in listTablesOutput!.tableNames! {
+                print("\(tableName)")
+            }
+            
+            return nil
+        }
+    }
     
     // MARK: - UIImagePickerControllerDelegate
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
@@ -94,11 +112,12 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         rekognitionObject = AWSRekognition.default()
         let faceImageAWS = AWSRekognitionImage()
         faceImageAWS?.bytes = faceImageData
-        let collectionid = "myindex"
-        let threshold = 95
-        let maxfaces = 5
-        
-        rekognitionObject?.searchImageByFace(collectionid, threshold, faceImageAWS, maxfaces){
+        let imagerequest = AWSRekognitionSearchFacesByImageRequest()
+        imagerequest?.collectionId = "myindex"
+        imagerequest?.faceMatchThreshold = 95
+        imagerequest?.image = faceImageAWS
+        imagerequest?.maxFaces = 5
+        rekognitionObject?.searchFaces(byImage: (imagerequest)!) {
             (result, error) in
             if error != nil{
                 print(error!)
@@ -106,13 +125,13 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
             }
             
             //1. First we check if there are any faces in the response
-            if ((result!.FaceMatches?.count)! > 0){
+            if ((result!.faceMatches?.count)! > 0){
                 
                 //2. Celebrities were found. Lets iterate through all of them
-                for (index, face) in result!.FaceMatches!.enumerated(){
+                for (index, face) in result!.faceMatches!.enumerated(){
                     
                     //Check the confidence value returned by the API for each celebirty identified
-                    if(face.matchConfidence!.intValue > 50){ //Adjust the confidence value to whatever you are comfortable with
+                    if(face.similarity!.intValue > 50){ //Adjust the confidence value to whatever you are comfortable with
                         
                         //We are confident this is celebrity. Lets point them out in the image using the main thread
                         DispatchQueue.main.async {
@@ -124,36 +143,37 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
                             faceInImage.scene = (self?.FaceImageView)!
                             
                             //Get the coordinates for where this celebrity face is in the image and pass them to the Celebrity instance
-                            celebrityInImage.boundingBox = ["height":face.face?.boundingBox?.height, "left":face.face?.boundingBox?.left, "top":face.face?.boundingBox?.top, "width":face.face?.boundingBox?.width] as! [String : CGFloat]
+                            faceInImage.boundingBox = ["height":face.face?.boundingBox?.height, "left":face.face?.boundingBox?.left, "top":face.face?.boundingBox?.top, "width":face.face?.boundingBox?.width] as! [String : CGFloat]
+                            
                             
                             //Get the person name and pass it along
-                            faceInImage.name = face.name!
+                            //faceInImage.name = face.name!
                             //Get the first url returned by the API for this celebrity. This is going to be an IMDb profile link
-                            if (face.urls!.count > 0){
-                                faceInImage.infoLink = face.urls![0]
-                            }
+                            //if (face.urls!.count > 0){
+                            //    faceInImage.infoLink = face.urls![0]
+                            //}
                                 //If there are no links direct them to IMDB search page
-                            else{
-                                celebrityInImage.infoLink = "https://www.imdb.com/search/name-text?bio="+celebrityInImage.name
-                            }
+                            //else{
+                            //    celebrityInImage.infoLink = "https://www.imdb.com/search/name-text?bio="+celebrityInImage.name
+                            //}
                             //Update the celebrity links map that we will use next to create buttons
-                            self?.infoLinksMap[index] = "https://"+celebFace.urls![0]
+                            //self?.infoLinksMap[index] = "https://"+celebFace.urls![0]
                             
                             //Create a button that will take users to the IMDb link when tapped
-                            let infoButton:UIButton = celebrityInImage.createInfoButton()
+                            let infoButton:UIButton = faceInImage.createInfoButton()
                             infoButton.tag = index
                             infoButton.addTarget(self, action: #selector(self?.handleTap), for: UIControlEvents.touchUpInside)
-                            self?.CelebImageView.addSubview(infoButton)
+                            self?.FaceImageView.addSubview(infoButton)
                         }
                     }
                     
                 }
             }
                 //If there were no celebrities in the image, lets check if there were any faces (who, granted, could one day become celebrities)
-            else if ((result!.unrecognizedFaces?.count)! > 0){
+            //else if ((result!.unrecognizedFaces?.count)! > 0){
                 //Faces are present. Point them out in the Image (left as an exercise for the reader)
                 /**/
-            }
+            //}
             else{
                 //No faces were found (presumably no people were found either)
                 print("No faces in this pic")
