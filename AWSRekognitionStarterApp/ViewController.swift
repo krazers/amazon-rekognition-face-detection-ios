@@ -17,10 +17,11 @@
 import UIKit
 import SafariServices
 import AWSRekognition
+import AWSDynamoDB
 
 class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate, SFSafariViewControllerDelegate {
     
-    @IBOutlet weak var CelebImageView: UIImageView!
+    @IBOutlet weak var FaceImageView: UIImageView!
     
     var infoLinksMap: [Int:String] = [1000:""]
     var rekognitionObject:AWSRekognition?
@@ -29,8 +30,8 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         
-        let celebImage:Data = UIImageJPEGRepresentation(CelebImageView.image!, 0.2)!
-        sendImageToRekognition(celebImageData: celebImage)
+        let faceImage:Data = UIImageJPEGRepresentation(FaceImageView.image!, 0.2)!
+        sendImageToRekognition(faceImageData: faceImage)
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -71,39 +72,39 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
             fatalError("couldn't load image from Photos")
         }
         
-        CelebImageView.image = image
-        let celebImage:Data = UIImageJPEGRepresentation(image, 0.2)!
+        FaceImageView.image = image
+        let faceImage:Data = UIImageJPEGRepresentation(image, 0.2)!
         
         //Demo Line
-        sendImageToRekognition(celebImageData: celebImage)
+        sendImageToRekognition(faceImageData: faceImage)
     }
     
     
     //MARK: - AWS Methods
-    func sendImageToRekognition(celebImageData: Data){
+    func sendImageToRekognition(faceImageData: Data){
         
         //Delete older labels or buttons
         DispatchQueue.main.async {
             [weak self] in
-            for subView in (self?.CelebImageView.subviews)! {
+            for subView in (self?.FaceImageView.subviews)! {
                 subView.removeFromSuperview()
             }
         }
         
         rekognitionObject = AWSRekognition.default()
-        let celebImageAWS = AWSRekognitionImage()
-        celebImageAWS?.bytes = celebImageData
-        let celebRequest = AWSRekognitionRecognizeCelebritiesRequest()
-        celebRequest?.image = celebImageAWS
+        let faceImageAWS = AWSRekognitionImage()
+        faceImageAWS?.bytes = faceImageData
+        let faceRequest = AWSRekognitionRecognizeCelebritiesRequest()
+        faceRequest?.image = faceImageAWS
         
-        rekognitionObject?.recognizeCelebrities(celebRequest!){
+        rekognitionObject?.recognizeCelebrities(faceRequest!){
             (result, error) in
             if error != nil{
                 print(error!)
                 return
             }
             
-            //1. First we check if there are any celebrities in the response
+            //1. First we check if there are any faces in the response
             if ((result!.celebrityFaces?.count)! > 0){
                 
                 //2. Celebrities were found. Lets iterate through all of them

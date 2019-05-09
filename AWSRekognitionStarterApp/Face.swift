@@ -18,7 +18,7 @@ import Foundation
 import UIKit
 import SafariServices
 
-class Celebrity {
+class Face {
     
     var boundingBox: [String:CGFloat]! //= ["height": 0.0,"left": 0.0,"top": 1.0,"width": 0.0]
     
