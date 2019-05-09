@@ -94,10 +94,11 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         rekognitionObject = AWSRekognition.default()
         let faceImageAWS = AWSRekognitionImage()
         faceImageAWS?.bytes = faceImageData
-        let faceRequest = AWSRekognitionRecognizeCelebritiesRequest()
-        faceRequest?.image = faceImageAWS
+        let collectionid = "myindex"
+        let threshold = 95
+        let maxfaces = 5
         
-        rekognitionObject?.recognizeCelebrities(faceRequest!){
+        rekognitionObject?.searchImageByFace(collectionid, threshold, faceImageAWS, maxfaces){
             (result, error) in
             if error != nil{
                 print(error!)
@@ -105,31 +106,31 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
             }
             
             //1. First we check if there are any faces in the response
-            if ((result!.celebrityFaces?.count)! > 0){
+            if ((result!.FaceMatches?.count)! > 0){
                 
                 //2. Celebrities were found. Lets iterate through all of them
-                for (index, celebFace) in result!.celebrityFaces!.enumerated(){
+                for (index, face) in result!.FaceMatches!.enumerated(){
                     
                     //Check the confidence value returned by the API for each celebirty identified
-                    if(celebFace.matchConfidence!.intValue > 50){ //Adjust the confidence value to whatever you are comfortable with
+                    if(face.matchConfidence!.intValue > 50){ //Adjust the confidence value to whatever you are comfortable with
                         
                         //We are confident this is celebrity. Lets point them out in the image using the main thread
                         DispatchQueue.main.async {
                             [weak self] in
                             
-                            //Create an instance of Celebrity. This class is availabe with the starter application you downloaded
-                            let celebrityInImage = Celebrity()
+                            //Create an instance of Face. This class is availabe with the starter application you downloaded
+                            let faceInImage = Face()
                             
-                            celebrityInImage.scene = (self?.CelebImageView)!
+                            faceInImage.scene = (self?.FaceImageView)!
                             
                             //Get the coordinates for where this celebrity face is in the image and pass them to the Celebrity instance
-                            celebrityInImage.boundingBox = ["height":celebFace.face?.boundingBox?.height, "left":celebFace.face?.boundingBox?.left, "top":celebFace.face?.boundingBox?.top, "width":celebFace.face?.boundingBox?.width] as! [String : CGFloat]
+                            celebrityInImage.boundingBox = ["height":face.face?.boundingBox?.height, "left":face.face?.boundingBox?.left, "top":face.face?.boundingBox?.top, "width":face.face?.boundingBox?.width] as! [String : CGFloat]
                             
-                            //Get the celebrity name and pass it along
-                            celebrityInImage.name = celebFace.name!
+                            //Get the person name and pass it along
+                            faceInImage.name = face.name!
                             //Get the first url returned by the API for this celebrity. This is going to be an IMDb profile link
-                            if (celebFace.urls!.count > 0){
-                                celebrityInImage.infoLink = celebFace.urls![0]
+                            if (face.urls!.count > 0){
+                                faceInImage.infoLink = face.urls![0]
                             }
                                 //If there are no links direct them to IMDB search page
                             else{

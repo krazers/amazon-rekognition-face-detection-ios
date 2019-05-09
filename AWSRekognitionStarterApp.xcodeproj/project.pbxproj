@@ -39,12 +39,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		04B2CD9C8FF05714EC8F49A7 /* Pods-AWSRekognitionStarterAppUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AWSRekognitionStarterAppUITests.release.xcconfig"; path = "Pods/Target Support Files/Pods-AWSRekognitionStarterAppUITests/Pods-AWSRekognitionStarterAppUITests.release.xcconfig"; sourceTree = "<group>"; };
 		1489E8A7FFBAB08E6E16AC59 /* Pods_AWSRekognitionStarterAppUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AWSRekognitionStarterAppUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		194ED28A9D6DA0B0E18DD9BF /* Pods-AWSRekognitionStarterAppTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AWSRekognitionStarterAppTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-AWSRekognitionStarterAppTests/Pods-AWSRekognitionStarterAppTests.release.xcconfig"; sourceTree = "<group>"; };
-		26A3FDB1F932ACAF27E50729 /* Pods-AWSRekognitionStarterApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AWSRekognitionStarterApp.release.xcconfig"; path = "Pods/Target Support Files/Pods-AWSRekognitionStarterApp/Pods-AWSRekognitionStarterApp.release.xcconfig"; sourceTree = "<group>"; };
-		45808D6418BCA6C1034C29CE /* Pods-AWSRekognitionStarterAppUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AWSRekognitionStarterAppUITests.release.xcconfig"; path = "Pods/Target Support Files/Pods-AWSRekognitionStarterAppUITests/Pods-AWSRekognitionStarterAppUITests.release.xcconfig"; sourceTree = "<group>"; };
-		5ADC1B460C14A1705E249372 /* Pods-AWSRekognitionStarterApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AWSRekognitionStarterApp.debug.xcconfig"; path = "Pods/Target Support Files/Pods-AWSRekognitionStarterApp/Pods-AWSRekognitionStarterApp.debug.xcconfig"; sourceTree = "<group>"; };
-		699AFF89AF624F167336139E /* Pods-AWSRekognitionStarterAppTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AWSRekognitionStarterAppTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-AWSRekognitionStarterAppTests/Pods-AWSRekognitionStarterAppTests.debug.xcconfig"; sourceTree = "<group>"; };
+		5ADB26724A52DE97040E94B0 /* Pods-AWSRekognitionStarterAppTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AWSRekognitionStarterAppTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-AWSRekognitionStarterAppTests/Pods-AWSRekognitionStarterAppTests.release.xcconfig"; sourceTree = "<group>"; };
 		6EF46A2EA46CBF4F6D649739 /* Pods_AWSRekognitionStarterApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AWSRekognitionStarterApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		76A77355213F302100974231 /* AWSRekognitionStarterApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AWSRekognitionStarterApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		76A77358213F302100974231 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -60,8 +57,11 @@
 		76A77378213F302200974231 /* AWSRekognitionStarterAppUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AWSRekognitionStarterAppUITests.swift; sourceTree = "<group>"; };
 		76A7737A213F302200974231 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		76F9DD99213F5724006358C3 /* Face.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Face.swift; sourceTree = "<group>"; };
+		791EDA9C8EEDEC52F0B41D0C /* Pods-AWSRekognitionStarterAppTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AWSRekognitionStarterAppTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-AWSRekognitionStarterAppTests/Pods-AWSRekognitionStarterAppTests.debug.xcconfig"; sourceTree = "<group>"; };
+		ABB8F365349F182C00CF1CDA /* Pods-AWSRekognitionStarterApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AWSRekognitionStarterApp.debug.xcconfig"; path = "Pods/Target Support Files/Pods-AWSRekognitionStarterApp/Pods-AWSRekognitionStarterApp.debug.xcconfig"; sourceTree = "<group>"; };
 		CBC5CAB1E1E06D6159FAFE61 /* Pods_AWSRekognitionStarterAppTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AWSRekognitionStarterAppTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		D33859DD844A86E9F7DF3BD6 /* Pods-AWSRekognitionStarterAppUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AWSRekognitionStarterAppUITests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-AWSRekognitionStarterAppUITests/Pods-AWSRekognitionStarterAppUITests.debug.xcconfig"; sourceTree = "<group>"; };
+		D49828BD593E6415A05A2CBB /* Pods-AWSRekognitionStarterAppUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AWSRekognitionStarterAppUITests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-AWSRekognitionStarterAppUITests/Pods-AWSRekognitionStarterAppUITests.debug.xcconfig"; sourceTree = "<group>"; };
+		EA3C155ECD1BC2470AADC636 /* Pods-AWSRekognitionStarterApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AWSRekognitionStarterApp.release.xcconfig"; path = "Pods/Target Support Files/Pods-AWSRekognitionStarterApp/Pods-AWSRekognitionStarterApp.release.xcconfig"; sourceTree = "<group>"; };
 		F004822C2151CED700FCE53B /* jeff_portrait.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = jeff_portrait.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -151,12 +151,12 @@
 		9ADC635AF022204D7F6D75A1 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				5ADC1B460C14A1705E249372 /* Pods-AWSRekognitionStarterApp.debug.xcconfig */,
-				26A3FDB1F932ACAF27E50729 /* Pods-AWSRekognitionStarterApp.release.xcconfig */,
-				699AFF89AF624F167336139E /* Pods-AWSRekognitionStarterAppTests.debug.xcconfig */,
-				194ED28A9D6DA0B0E18DD9BF /* Pods-AWSRekognitionStarterAppTests.release.xcconfig */,
-				D33859DD844A86E9F7DF3BD6 /* Pods-AWSRekognitionStarterAppUITests.debug.xcconfig */,
-				45808D6418BCA6C1034C29CE /* Pods-AWSRekognitionStarterAppUITests.release.xcconfig */,
+				ABB8F365349F182C00CF1CDA /* Pods-AWSRekognitionStarterApp.debug.xcconfig */,
+				EA3C155ECD1BC2470AADC636 /* Pods-AWSRekognitionStarterApp.release.xcconfig */,
+				791EDA9C8EEDEC52F0B41D0C /* Pods-AWSRekognitionStarterAppTests.debug.xcconfig */,
+				5ADB26724A52DE97040E94B0 /* Pods-AWSRekognitionStarterAppTests.release.xcconfig */,
+				D49828BD593E6415A05A2CBB /* Pods-AWSRekognitionStarterAppUITests.debug.xcconfig */,
+				04B2CD9C8FF05714EC8F49A7 /* Pods-AWSRekognitionStarterAppUITests.release.xcconfig */,
 			);
 			name = Pods;
 			sourceTree = "<group>";
@@ -313,12 +313,22 @@
 			);
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-AWSRekognitionStarterApp/Pods-AWSRekognitionStarterApp-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/AWSCognito/AWSCognito.framework",
+				"${BUILT_PRODUCTS_DIR}/AWSCognitoIdentityProvider/AWSCognitoIdentityProvider.framework",
+				"${BUILT_PRODUCTS_DIR}/AWSCognitoIdentityProviderASF/AWSCognitoIdentityProviderASF.framework",
 				"${BUILT_PRODUCTS_DIR}/AWSCore/AWSCore.framework",
+				"${BUILT_PRODUCTS_DIR}/AWSDynamoDB/AWSDynamoDB.framework",
+				"${BUILT_PRODUCTS_DIR}/AWSIoT/AWSIoT.framework",
 				"${BUILT_PRODUCTS_DIR}/AWSRekognition/AWSRekognition.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AWSCognito.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AWSCognitoIdentityProvider.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AWSCognitoIdentityProviderASF.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AWSCore.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AWSDynamoDB.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AWSIoT.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AWSRekognition.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -553,11 +563,11 @@
 		};
 		76A7737E213F302200974231 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 5ADC1B460C14A1705E249372 /* Pods-AWSRekognitionStarterApp.debug.xcconfig */;
+			baseConfigurationReference = ABB8F365349F182C00CF1CDA /* Pods-AWSRekognitionStarterApp.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = GR5DHCQV9E;
+				DEVELOPMENT_TEAM = KLZ73HJ37A;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = AWSRekognitionStarterApp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -570,11 +580,11 @@
 		};
 		76A7737F213F302200974231 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 26A3FDB1F932ACAF27E50729 /* Pods-AWSRekognitionStarterApp.release.xcconfig */;
+			baseConfigurationReference = EA3C155ECD1BC2470AADC636 /* Pods-AWSRekognitionStarterApp.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = GR5DHCQV9E;
+				DEVELOPMENT_TEAM = KLZ73HJ37A;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = AWSRekognitionStarterApp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -587,7 +597,7 @@
 		};
 		76A77381213F302200974231 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 699AFF89AF624F167336139E /* Pods-AWSRekognitionStarterAppTests.debug.xcconfig */;
+			baseConfigurationReference = 791EDA9C8EEDEC52F0B41D0C /* Pods-AWSRekognitionStarterAppTests.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -605,7 +615,7 @@
 		};
 		76A77382213F302200974231 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 194ED28A9D6DA0B0E18DD9BF /* Pods-AWSRekognitionStarterAppTests.release.xcconfig */;
+			baseConfigurationReference = 5ADB26724A52DE97040E94B0 /* Pods-AWSRekognitionStarterAppTests.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -623,7 +633,7 @@
 		};
 		76A77384213F302200974231 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = D33859DD844A86E9F7DF3BD6 /* Pods-AWSRekognitionStarterAppUITests.debug.xcconfig */;
+			baseConfigurationReference = D49828BD593E6415A05A2CBB /* Pods-AWSRekognitionStarterAppUITests.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
@@ -640,7 +650,7 @@
 		};
 		76A77385213F302200974231 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 45808D6418BCA6C1034C29CE /* Pods-AWSRekognitionStarterAppUITests.release.xcconfig */;
+			baseConfigurationReference = 04B2CD9C8FF05714EC8F49A7 /* Pods-AWSRekognitionStarterAppUITests.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;

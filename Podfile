@@ -7,6 +7,11 @@ target 'AWSRekognitionStarterApp' do
 
   # Pods for AWSRekognitionStarterApp
   pod 'AWSRekognition'
+  pod 'AWSCognito'
+  pod 'AWSCognitoIdentityProvider'
+  pod 'AWSDynamoDB'
+  pod 'AWSIoT'
+  
 
   target 'AWSRekognitionStarterAppTests' do
     inherit! :search_paths
