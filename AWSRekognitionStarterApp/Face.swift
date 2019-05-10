@@ -22,7 +22,7 @@ class Face {
     
     var boundingBox: [String:CGFloat]! //= ["height": 0.0,"left": 0.0,"top": 1.0,"width": 0.0]
     
-    
+    var simularity:Float!
     var name:String! //= ""
     var urls:[String]! //= []
     
@@ -58,7 +58,8 @@ class Face {
         self.infoButton.setTitleColor(UIColor.white, for: UIControlState.normal)
         self.infoButton.titleLabel?.adjustsFontSizeToFitWidth = true
         self.infoButton.titleLabel?.textAlignment = NSTextAlignment.center
-        self.infoButton.setTitle(self.name, for: UIControlState.normal)
+        let title = String(format: "%@ (%.2f%%)", self.name, self.simularity)
+        self.infoButton.setTitle(title, for: UIControlState.normal)
         
         scene.isUserInteractionEnabled = true
         scene.addSubview(self.infoButton)

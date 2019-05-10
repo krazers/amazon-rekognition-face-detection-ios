@@ -97,22 +97,23 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         faceImageAWS?.bytes = faceImageData
         let imagerequest = AWSRekognitionSearchFacesByImageRequest()
         imagerequest?.collectionId = "faces"
-        imagerequest?.faceMatchThreshold = 95
+        imagerequest?.faceMatchThreshold = 70
+        imagerequest?.maxFaces = 10
         imagerequest?.image = faceImageAWS
-        imagerequest?.maxFaces = 5
-        rekognitionObject?.searchFaces(byImage: (imagerequest)!) {
+
+        rekognitionObject?.searchFaces(byImage: imagerequest!) {
             (result, error) in
             if error != nil{
                 print(error!)
                 return
             }
-            
+            print(String(format:"Faces found: %@",String(result!.faceMatches!.count)))
             //1. First we check if there are any faces in the response
-            if ((result!.faceMatches?.count)! > 0){
+            if (result!.faceMatches!.count > 0){
                 
                 //2. Faces were found. Lets iterate through all of them
                 for (index, face) in result!.faceMatches!.enumerated(){
-                    
+                    print(String(index))
                     //Check the confidence value returned by the API for each celebirty identified
                     if(face.similarity!.intValue > 50){ //Adjust the confidence value to whatever you are comfortable with
                         
@@ -124,7 +125,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
                             let faceInImage = Face()
                             
                             faceInImage.scene = (self?.FaceImageView)!
-                            
+                            faceInImage.simularity = face.similarity!.floatValue
                             //Get the coordinates for where this celebrity face is in the image and pass them to the Celebrity instance
                             faceInImage.boundingBox = ["height":face.face?.boundingBox?.height, "left":face.face?.boundingBox?.left, "top":face.face?.boundingBox?.top, "width":face.face?.boundingBox?.width] as! [String : CGFloat]
                             
