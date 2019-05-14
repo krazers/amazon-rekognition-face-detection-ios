@@ -20,6 +20,9 @@
 		95CE485162F942032A5E13F5 /* Pods_AWSRekognitionStarterApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6EF46A2EA46CBF4F6D649739 /* Pods_AWSRekognitionStarterApp.framework */; };
 		BB62553722889240008A4ED9 /* CustomTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB62553622889240008A4ED9 /* CustomTableViewCell.swift */; };
 		BB625541228A7627008A4ED9 /* bezos.jpg in Resources */ = {isa = PBXBuildFile; fileRef = BB625540228A7627008A4ED9 /* bezos.jpg */; };
+		BBF738C8228B3552006AD61D /* icons8-question-mark-64.png in Resources */ = {isa = PBXBuildFile; fileRef = BBF738C5228B3552006AD61D /* icons8-question-mark-64.png */; };
+		BBF738CB228B3587006AD61D /* icons8-checkmark-64.png in Resources */ = {isa = PBXBuildFile; fileRef = BBF738C9228B3586006AD61D /* icons8-checkmark-64.png */; };
+		BBF738CC228B3587006AD61D /* icons8-delete-64.png in Resources */ = {isa = PBXBuildFile; fileRef = BBF738CA228B3587006AD61D /* icons8-delete-64.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -62,6 +65,9 @@
 		ABB8F365349F182C00CF1CDA /* Pods-AWSRekognitionStarterApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AWSRekognitionStarterApp.debug.xcconfig"; path = "Pods/Target Support Files/Pods-AWSRekognitionStarterApp/Pods-AWSRekognitionStarterApp.debug.xcconfig"; sourceTree = "<group>"; };
 		BB62553622889240008A4ED9 /* CustomTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTableViewCell.swift; sourceTree = "<group>"; };
 		BB625540228A7627008A4ED9 /* bezos.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = bezos.jpg; sourceTree = "<group>"; };
+		BBF738C5228B3552006AD61D /* icons8-question-mark-64.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icons8-question-mark-64.png"; sourceTree = "<group>"; };
+		BBF738C9228B3586006AD61D /* icons8-checkmark-64.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icons8-checkmark-64.png"; sourceTree = "<group>"; };
+		BBF738CA228B3587006AD61D /* icons8-delete-64.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icons8-delete-64.png"; sourceTree = "<group>"; };
 		CBC5CAB1E1E06D6159FAFE61 /* Pods_AWSRekognitionStarterAppTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AWSRekognitionStarterAppTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D49828BD593E6415A05A2CBB /* Pods-AWSRekognitionStarterAppUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AWSRekognitionStarterAppUITests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-AWSRekognitionStarterAppUITests/Pods-AWSRekognitionStarterAppUITests.debug.xcconfig"; sourceTree = "<group>"; };
 		EA3C155ECD1BC2470AADC636 /* Pods-AWSRekognitionStarterApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AWSRekognitionStarterApp.release.xcconfig"; path = "Pods/Target Support Files/Pods-AWSRekognitionStarterApp/Pods-AWSRekognitionStarterApp.release.xcconfig"; sourceTree = "<group>"; };
@@ -120,6 +126,9 @@
 		76A77357213F302100974231 /* AWSRekognitionStarterApp */ = {
 			isa = PBXGroup;
 			children = (
+				BBF738C9228B3586006AD61D /* icons8-checkmark-64.png */,
+				BBF738CA228B3587006AD61D /* icons8-delete-64.png */,
+				BBF738C5228B3552006AD61D /* icons8-question-mark-64.png */,
 				BB625540228A7627008A4ED9 /* bezos.jpg */,
 				76F9DD99213F5724006358C3 /* Face.swift */,
 				76A77358213F302100974231 /* AppDelegate.swift */,
@@ -288,6 +297,9 @@
 				76A77363213F302100974231 /* LaunchScreen.storyboard in Resources */,
 				76A77360213F302100974231 /* Assets.xcassets in Resources */,
 				76A7735E213F302100974231 /* Main.storyboard in Resources */,
+				BBF738CB228B3587006AD61D /* icons8-checkmark-64.png in Resources */,
+				BBF738C8228B3552006AD61D /* icons8-question-mark-64.png in Resources */,
+				BBF738CC228B3587006AD61D /* icons8-delete-64.png in Resources */,
 				BB625541228A7627008A4ED9 /* bezos.jpg in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

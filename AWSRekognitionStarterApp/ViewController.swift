@@ -27,7 +27,13 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     @IBOutlet weak var captureImageView: UIImageView!
     @IBOutlet var tableview: UITableView!
     @IBOutlet var tableheader : UILabel!
-    @IBOutlet var activityIndicator: UIActivityIndicatorView!
+    @IBOutlet var tableheadergood : UILabel!
+    @IBOutlet var tableheaderverify : UILabel!
+    @IBOutlet var tableheaderunknown : UILabel!
+    @IBOutlet var tableheadergoodicon: UIImageView!
+    @IBOutlet var tableheaderverifyicon: UIImageView!
+    @IBOutlet var tableheaderunknownicon: UIImageView!
+
     @IBOutlet weak var previewView: UIView!
     @IBOutlet var takephoto: UIButton!
     
@@ -37,9 +43,17 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     var captureSession: AVCaptureSession!
     var stillImageOutput: AVCapturePhotoOutput!
     var videoPreviewLayer: AVCaptureVideoPreviewLayer!
+    let activityIndicator = UIActivityIndicatorView(activityIndicatorStyle: UIActivityIndicatorViewStyle.whiteLarge)
+    var isRunning: Bool!
+    var totalFacesDetected: Int!
+    var totalFacesProcessed: Int!
+    var totalFacesGood: Int!
+    var totalFacesBad: Int!
+    var totalFacesVerify: Int!
     
     //Faces datasource for table
     var facesDetected: [Face] = []
+    var workitems: [DispatchWorkItem] = []
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return self.facesDetected.count
@@ -79,15 +93,17 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         self.tableview.delegate = self
         self.tableview.dataSource = self
         self.tableview.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
-        self.tableheader?.text = "Results"
-        //self.tableview.register(UINib(nibName: "CustomTableViewCell", bundle: nil), forCellReuseIdentifier: "customcell")
+
+        self.updateLabels(facesprocessed: 0, facesdetected: 0, goodcount: 0, unknowncount: 0, verifycount: 0, showcounts: false)
+        
         let faceImage:Data = UIImageJPEGRepresentation(captureImageView.image!, 0.2)!
-        sendImageToRekognition(originalImage: captureImageView.image!, faceImageData: faceImage, handleRotation: false)
+        sendImageToRekognition(originalImage: captureImageView.image!, faceImageData: faceImage, handleRotation: false, lastorientation: UIDeviceOrientation.portrait)
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
         self.captureSession.stopRunning()
+        
         setupSession()
     }
     
@@ -103,6 +119,10 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     
     //Setup camera session
     func setupSession(){
+        //Setup activity indicator
+        self.activityIndicator.center = CGPoint(x: self.tableview.bounds.size.width/2, y: self.tableview.bounds.size.height/2)
+        self.tableview.addSubview(activityIndicator)
+        
         //Resize text for button
         self.takephoto?.titleLabel?.minimumScaleFactor = 0.5
         self.takephoto?.titleLabel?.numberOfLines = 0
@@ -189,7 +209,18 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         
         captureImageView.image = image
         let faceImage:Data = UIImagePNGRepresentation(image)!
-        sendImageToRekognition(originalImage: image, faceImageData: faceImage, handleRotation: true)
+        
+        self.activityIndicator.startAnimating()
+
+        //Cancel all work items
+        for item in self.workitems{
+            item.cancel()
+        }
+        self.workitems.removeAll()
+        
+        
+        
+        sendImageToRekognition(originalImage: image, faceImageData: faceImage, handleRotation: true, lastorientation: UIDevice.current.orientation)
     }
     
     //MARK: - Button Actions
@@ -199,70 +230,135 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         stillImageOutput.capturePhoto(with: settings, delegate: self)
     }
     
+    func updateLabels(facesprocessed: Int, facesdetected: Int, goodcount: Int, unknowncount: Int, verifycount:Int, showcounts: Bool){
+        if(facesprocessed == 0 && facesdetected == 0 && !showcounts){
+            self.tableheader?.text = "Results"
+        }
+        else if(facesprocessed == facesdetected){
+            if(facesdetected == 1){
+            self.tableheader?.text = String(format: "Results (Processed %@ face)",String(facesdetected))
+            }else{
+                self.tableheader?.text = String(format: "Results (Processed %@ faces)",String(facesdetected))
+            }
+        }else if(facesprocessed == 0 && facesdetected == 0 && showcounts){
+            self.tableheader?.text = "Results (Processing...)"
+        }
+        else if(facesprocessed < facesdetected && showcounts){
+            if(facesdetected == 1){
+                self.tableheader?.text = String(format: "Results (Processing %@ face...)", String(facesdetected))
+            }else{
+                self.tableheader?.text = String(format: "Results (Processing %@ faces...)", String(facesdetected))
+            }
+        }
+
+        self.totalFacesBad = unknowncount
+        self.totalFacesGood = goodcount
+        self.totalFacesVerify = verifycount
+        self.tableheadergood.text = String(self.totalFacesGood)
+        self.tableheaderverify.text = String(self.totalFacesVerify)
+        self.tableheaderunknown.text = String(self.totalFacesBad)
+        self.tableheadergood.isHidden = !showcounts
+        self.tableheaderverify.isHidden = !showcounts
+        self.tableheaderunknown.isHidden = !showcounts
+        self.tableheadergoodicon.isHidden = !showcounts
+        self.tableheaderverifyicon.isHidden = !showcounts
+        self.tableheaderunknownicon.isHidden = !showcounts
+    }
     
     //MARK: - AWS Methods
-    func sendImageToRekognition(originalImage: UIImage, faceImageData: Data, handleRotation: Bool){
-        //Delete older labels or buttons
-        DispatchQueue.main.async {
-            [weak self] in
-            self?.facesDetected.removeAll()
-            self?.tableview.reloadData()
-            for subView in (self?.captureImageView.subviews)! {
-                subView.removeFromSuperview()
-            }
-        }
+    func sendImageToRekognition(originalImage: UIImage, faceImageData: Data, handleRotation: Bool, lastorientation: UIDeviceOrientation){
+        self.totalFacesProcessed = 0
+        self.totalFacesDetected = 0
+        self.totalFacesGood = 0
+        self.totalFacesBad = 0
+        self.totalFacesVerify = 0
         
-        rekognitionObject = AWSRekognition.default()
-        let faceImageAWS = AWSRekognitionImage()
-        faceImageAWS?.bytes = faceImageData
-        let image = UIImage(data: faceImageData as Data)
-
-        let detectfacesrequest = AWSRekognitionDetectFacesRequest()
-        detectfacesrequest?.image = faceImageAWS
-
-        
-        //Detect all faces
-        rekognitionObject?.detectFaces(detectfacesrequest!) {
-            (result, error) in
-            if error != nil{
-                print(error!)
+        var mainItem:DispatchWorkItem?
+        //Dispatch work to reset labels
+        mainItem = DispatchWorkItem {
+            if(mainItem?.isCancelled)!{
                 return
             }
+            //Dispatch work to reset labels
+            let workItem = DispatchWorkItem {
+                [weak self] in
+                if(mainItem?.isCancelled)!{
+                    return
+                }
+                self?.facesDetected.removeAll()
+                self?.tableview.reloadData()
+                for subView in (self?.captureImageView?.subviews)! {
+                    subView.removeFromSuperview()
+                }
+                self?.updateLabels(facesprocessed: self!.totalFacesProcessed, facesdetected: self!.totalFacesDetected, goodcount: self!.totalFacesGood, unknowncount: self!.totalFacesBad, verifycount: self!.totalFacesVerify, showcounts: true)
+            }
+            DispatchQueue.main.async(execute: workItem)
+            self.workitems.append(workItem)
             
-            print(String(format:"Faces detected: %@",String(result!.faceDetails!.count)))
-            //1. First we check if there are any faces in the response
-            
-            if (result!.faceDetails!.count > 0){
-                
-                //2. Faces were found. Lets iterate through all of them
-                for (index, face) in result!.faceDetails!.enumerated(){
-                    print(String(index))
-                    
-                    //If confident its face, search for face in index
-                    if(face.confidence!.intValue > 50){
-                        let viewHeight = face.boundingBox?.height  as! CGFloat
-                        let viewWidth = face.boundingBox?.width as! CGFloat
-                        let toRect = CGRect(x: face.boundingBox?.left as! CGFloat, y: face.boundingBox?.top as! CGFloat, width: viewWidth, height:viewHeight)
-                        
-                        let croppedImage = self.cropImage(image!, toRect: toRect, viewWidth: viewWidth, viewHeight: viewHeight, handleRotation: handleRotation)
-                        
-                        let croppedFace:Data = UIImageJPEGRepresentation(croppedImage!, 0.2)!
+            self.rekognitionObject = AWSRekognition.default()
+            let faceImageAWS = AWSRekognitionImage()
+            faceImageAWS?.bytes = faceImageData
+            let image = UIImage(data: faceImageData as Data)
 
+            let detectfacesrequest = AWSRekognitionDetectFacesRequest()
+            detectfacesrequest?.image = faceImageAWS
+
+            
+            //Detect all faces
+            self.rekognitionObject?.detectFaces(detectfacesrequest!) {
+                (result, error) in
+                if error != nil{
+                    print(error!)
+                    return
+                }
+                
+                print(String(format:"Faces detected: %@",String(result!.faceDetails!.count)))
+                //1. First we check if there are any faces in the response
+                
+                if (result!.faceDetails!.count > 0){
+                    //Dispatch work to reset labels
+                    let workItem = DispatchWorkItem {
+                        [weak self] in
+                        self?.totalFacesDetected = result!.faceDetails!.count
+                        self?.updateLabels(facesprocessed: self!.totalFacesProcessed, facesdetected: self!.totalFacesDetected, goodcount: self!.totalFacesGood, unknowncount: self!.totalFacesBad, verifycount: self!.totalFacesVerify, showcounts: true)
                         
-                        //Detect face in rekognition
-                        self.rekognizeFace(faceImageData: croppedFace, detectedface: face, croppedFace: croppedImage!, handleRotation: handleRotation)
+                    }
+                    DispatchQueue.main.async(execute: workItem)
+                    
+                    //2. Faces were found. Lets iterate through all of them
+                    for (index, face) in result!.faceDetails!.enumerated(){
+                        print(String(index))
+                        if(mainItem?.isCancelled)!{
+                            return
+                        }
+                        //If confident its face, search for face in index
+                        if(face.confidence!.intValue > 50){
+                            let viewHeight = face.boundingBox?.height  as! CGFloat
+                            let viewWidth = face.boundingBox?.width as! CGFloat
+                            let toRect = CGRect(x: face.boundingBox?.left as! CGFloat, y: face.boundingBox?.top as! CGFloat, width: viewWidth, height:viewHeight)
+                            
+                            let croppedImage = self.cropImage(image!, toRect: toRect, viewWidth: viewWidth, viewHeight: viewHeight, handleRotation: handleRotation, lastorientation: lastorientation)
+                            
+                            let croppedFace:Data = UIImageJPEGRepresentation(croppedImage!, 0.2)!
+
+                            
+                            //Detect face in rekognition
+                            self.rekognizeFace(faceImageData: croppedFace, detectedface: face, croppedFace: croppedImage!, handleRotation: handleRotation, lastorientation: lastorientation)
+                        }
                     }
                 }
-            }
-            else{
-                //No faces were found (presumably no people were found either)
-                print("No faces in this pic")
+                else{
+                    //No faces were found (presumably no people were found either)
+                    print("No faces in this pic")
+                }
             }
         }
+        DispatchQueue.main.async(execute: mainItem!)
+        self.workitems.append(mainItem!)
     }
     
     // Rekognize face
-    func rekognizeFace(faceImageData: Data, detectedface: AWSRekognitionFaceDetail, croppedFace: UIImage, handleRotation: Bool){
+    func rekognizeFace(faceImageData: Data, detectedface: AWSRekognitionFaceDetail, croppedFace: UIImage, handleRotation: Bool, lastorientation: UIDeviceOrientation){
         rekognitionObject = AWSRekognition.default()
         let faceImageAWS = AWSRekognitionImage()
         faceImageAWS?.bytes = faceImageData
@@ -285,16 +381,23 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
                 print(error!)
                 print("No faces in this pic")
                 faceInImage.name = "Unknown"
-                DispatchQueue.main.async {
+                
+                //Dispatch work to add face and label
+                let workItem = DispatchWorkItem {
                     [weak self] in
                     self?.facesDetected.append(faceInImage)
                     self?.tableview.reloadData()
-                    //Create a button for user.
+                    //Create a label for face.
                     let infoButton:UIButton = faceInImage.createInfoButton()
-                    //infoButton.tag = index
-                    //infoButton.addTarget(self, action: #selector(self?.handleTap), for: UIControlEvents.touchUpInside)
                     self?.captureImageView.addSubview(infoButton)
+                    
+                    self?.totalFacesProcessed = self!.totalFacesProcessed + 1
+                    self?.totalFacesBad = self!.totalFacesBad + 1
+                    self?.updateLabels(facesprocessed: self!.totalFacesProcessed, facesdetected: self!.totalFacesDetected, goodcount: self!.totalFacesGood, unknowncount: self!.totalFacesBad, verifycount: self!.totalFacesVerify, showcounts: true)
+                    
                 }
+                DispatchQueue.main.async(execute: workItem)
+                self.workitems.append(workItem)
                 return
             }
             print(String(format:"Faces found: %@",String(result!.faceMatches!.count)))
@@ -307,10 +410,14 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
                     //Check the confidence value returned by the API for each celebirty identified
                     if(face.similarity!.intValue > 50){ //Adjust the confidence value to whatever you are comfortable with
                         
-                        //We are confident this is a known person. Lets point them out in the image using the main thread
-                        DispatchQueue.main.async {
+                        //Look up name of face identified in dynamo
+                        var workItem:DispatchWorkItem?
+                        workItem = DispatchWorkItem {
                             [weak self] in
-                
+                            
+                            if(workItem?.isCancelled)!{
+                                return
+                            }
                             faceInImage.simularity = face.similarity!.floatValue
                             
                             //Get name for face
@@ -327,6 +434,9 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
                                 if let error = err as NSError? {
                                     print("Error occurred: \(error)")
                                     faceInImage.name = "Unknown"
+                                    self?.totalFacesProcessed = self!.totalFacesProcessed + 1
+                                    self?.totalFacesBad = self!.totalFacesBad + 1
+                                    self?.updateLabels(facesprocessed: self!.totalFacesProcessed, facesdetected: self!.totalFacesDetected, goodcount: self!.totalFacesGood, unknowncount: self!.totalFacesBad, verifycount: self!.totalFacesVerify, showcounts: true)
                                 }
                                 else{
                                     //Find faaceid value
@@ -340,20 +450,32 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
                                             }
                                     }
                                 }
-                                DispatchQueue.main.async {
+                                let workItem2 = DispatchWorkItem {
                                     [weak self] in
+                                    if(workItem?.isCancelled)!{
+                                        return
+                                    }
                                     self?.facesDetected.append(faceInImage)
                                     self?.tableview.reloadData()
-                                    //Create a button for user.
+                                    //Create a label for face.
                                     let infoButton:UIButton = faceInImage.createInfoButton()
-                                    //infoButton.tag = index
-                                    //infoButton.addTarget(self, action: #selector(self?.handleTap), for: UIControlEvents.touchUpInside)
                                     self?.captureImageView.addSubview(infoButton)
+                                    self?.totalFacesProcessed = self!.totalFacesProcessed + 1
+                                    
+                                    if(face.similarity!.intValue >= 98){
+                                        self?.totalFacesGood = self!.totalFacesGood + 1
+                                    }else{
+                                        self?.totalFacesVerify = self!.totalFacesVerify + 1
+                                    }
+                                    self?.updateLabels(facesprocessed: self!.totalFacesProcessed, facesdetected: self!.totalFacesDetected, goodcount: self!.totalFacesGood, unknowncount: self!.totalFacesBad, verifycount: self!.totalFacesVerify, showcounts: true)
 
                                 }
+                                DispatchQueue.main.async(execute: workItem2)
+                                self?.workitems.append(workItem2)
                             }
-                            
                         }
+                        DispatchQueue.main.async(execute: workItem!)
+                        self.workitems.append(workItem!)
                     }
                     
                 }
@@ -362,23 +484,28 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
                 //No faces were found (presumably no people were found either)
                 print("No faces in this pic")
                 faceInImage.name = "Unknown"
-                DispatchQueue.main.async {
+                
+                let workItem3 = DispatchWorkItem {
                     [weak self] in
                     self?.facesDetected.append(faceInImage)
                     self?.tableview.reloadData()
-                    //Create a button for user.
+                    //Create a label for face.
                     let infoButton:UIButton = faceInImage.createInfoButton()
-                    //infoButton.tag = index
-                    //infoButton.addTarget(self, action: #selector(self?.handleTap), for: UIControlEvents.touchUpInside)
                     self?.captureImageView.addSubview(infoButton)
+                    self?.totalFacesProcessed = self!.totalFacesProcessed + 1
+                    self?.totalFacesBad = self!.totalFacesBad + 1
+                    self?.updateLabels(facesprocessed: self!.totalFacesProcessed, facesdetected: self!.totalFacesDetected, goodcount: self!.totalFacesGood, unknowncount: self!.totalFacesBad, verifycount: self!.totalFacesVerify, showcounts: true)
                 }
+                DispatchQueue.main.async(execute: workItem3)
+                self.workitems.append(workItem3)
+                
             }
         }
     }
     
     
     //Crop image for individual faces found
-    func cropImage(_ inputImage: UIImage, toRect cropRect: CGRect, viewWidth: CGFloat, viewHeight: CGFloat, handleRotation: Bool) -> UIImage?
+    func cropImage(_ inputImage: UIImage, toRect cropRect: CGRect, viewWidth: CGFloat, viewHeight: CGFloat, handleRotation: Bool, lastorientation: UIDeviceOrientation) -> UIImage?
     {
         
         // Scale cropRect to handle images larger than shown-on-screen size
@@ -396,13 +523,13 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         // Return image to UIImage
         if(handleRotation){
             var orientation = UIImageOrientation.up
-            if UIDevice.current.orientation == UIDeviceOrientation.landscapeLeft || (UIDevice.current.orientation == UIDeviceOrientation.faceUp && UIDevice.current.orientation.isLandscape){
+            if lastorientation == UIDeviceOrientation.landscapeLeft || (UIDevice.current.orientation == UIDeviceOrientation.faceUp && UIDevice.current.orientation.isLandscape){
                 orientation = UIImageOrientation.up
-            } else if UIDevice.current.orientation == UIDeviceOrientation.landscapeRight {
+            } else if lastorientation == UIDeviceOrientation.landscapeRight {
                 orientation = UIImageOrientation.down
-            } else if UIDevice.current.orientation == UIDeviceOrientation.portrait || (UIDevice.current.orientation == UIDeviceOrientation.faceUp && UIDevice.current.orientation.isPortrait){
+            } else if lastorientation == UIDeviceOrientation.portrait || (UIDevice.current.orientation == UIDeviceOrientation.faceUp && UIDevice.current.orientation.isPortrait){
                 orientation = UIImageOrientation.right
-            } else if UIDevice.current.orientation == UIDeviceOrientation.portraitUpsideDown{
+            } else if lastorientation == UIDeviceOrientation.portraitUpsideDown{
                 orientation = UIImageOrientation.left
             }
             

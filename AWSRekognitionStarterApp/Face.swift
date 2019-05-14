@@ -59,8 +59,8 @@ class Face {
         self.infoButton.setTitleColor(UIColor.white, for: UIControlState.normal)
         self.infoButton.titleLabel?.adjustsFontSizeToFitWidth = true
         self.infoButton.titleLabel?.textAlignment = NSTextAlignment.center
-        let title = String(format: "%@ (%.2f%%)", self.name, self.simularity)
-        self.infoButton.setTitle(title, for: UIControlState.normal)
+        //let title = String(format: "%@ (%.2f%%)", self.name, self.simularity)
+        self.infoButton.setTitle( self.name, for: UIControlState.normal)
         
         scene.isUserInteractionEnabled = true
         scene.addSubview(self.infoButton)
