@@ -34,6 +34,7 @@ class Face {
     
     var scene: UIImageView! //= UIImageView.init()
     
+    var face: UIImage!
     //var parentController: UIViewController! //= UIViewController.init()
     
     
