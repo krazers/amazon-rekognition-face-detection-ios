@@ -265,6 +265,11 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         self.tableheaderunknownicon.isHidden = !showcounts
     }
     
+    func reloadList() { // should probably be called sort and not filter
+        self.facesDetected.sort() { $0.simularity > $1.simularity } // sort the faces by simularity
+        self.tableview.reloadData(); // notify the table view the data has changed
+    }
+    
     //MARK: - AWS Methods
     func sendImageToRekognition(originalImage: UIImage, faceImageData: Data, handleRotation: Bool, lastorientation: UIDeviceOrientation){
         self.totalFacesProcessed = 0
@@ -286,7 +291,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
                     return
                 }
                 self?.facesDetected.removeAll()
-                self?.tableview.reloadData()
+                self?.reloadList()
                 for subView in (self?.captureImageView?.subviews)! {
                     subView.removeFromSuperview()
                 }
@@ -386,7 +391,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
                 let workItem = DispatchWorkItem {
                     [weak self] in
                     self?.facesDetected.append(faceInImage)
-                    self?.tableview.reloadData()
+                    self?.reloadList()
                     //Create a label for face.
                     let infoButton:UIButton = faceInImage.createInfoButton()
                     self?.captureImageView.addSubview(infoButton)
@@ -456,7 +461,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
                                         return
                                     }
                                     self?.facesDetected.append(faceInImage)
-                                    self?.tableview.reloadData()
+                                    self?.reloadList()
                                     //Create a label for face.
                                     let infoButton:UIButton = faceInImage.createInfoButton()
                                     self?.captureImageView.addSubview(infoButton)
@@ -488,7 +493,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
                 let workItem3 = DispatchWorkItem {
                     [weak self] in
                     self?.facesDetected.append(faceInImage)
-                    self?.tableview.reloadData()
+                    self?.reloadList()
                     //Create a label for face.
                     let infoButton:UIButton = faceInImage.createInfoButton()
                     self?.captureImageView.addSubview(infoButton)
