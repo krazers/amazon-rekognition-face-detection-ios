@@ -1,3 +1,4 @@
+
 ## Amazon Rekognition Face Detection IOS
 
 iOS Swift project code for identifying people using Amazon Rekognition
@@ -22,9 +23,7 @@ Note the **identityPoolId** that is provided in the output section of your cloud
 5. Provide a Tag for the object called **Name** with the full name of the person as seen below:
 <img class="alignnone wp-image-1941 size-full" src="https://github.com/krazers/amazon-rekognition-face-detection-ios/blob/master/s3objecttag.png?raw=true">
 6. Save and hit next until complete.
-7. Build the app for your device and confirm that the app is working and making calls to
-Amazon Rekognition. If everything works, you should see a label on
-the face in the image that Amazon Rekognition has identified in your collection called **faces**.
+7. Build the app for your device and confirm that the app is working and making calls to Amazon Rekognition. If everything works, you should see a label on the face in the image that Amazon Rekognition has identified in your collection called **faces**.
 
 ## License Summary
 
