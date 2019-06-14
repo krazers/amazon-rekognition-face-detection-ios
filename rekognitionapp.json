@@ -1,0 +1,428 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: >-
+  CloudFormation Stack to create Amazon Cognito Federated Identity Pool, IAM
+  Roles, Policies, and other services required for an iOS app using Amazon
+  Rekognition
+Parameters:
+  BucketName:
+    Description: S3 Bucket name for images (used for testing)
+    Type: String
+Resources:
+  IdentityPool:
+    Type: 'AWS::Cognito::IdentityPool'
+    Properties:
+      IdentityPoolName: PersonRekognition
+      AllowUnauthenticatedIdentities: true
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: be84fb71-4561-48ee-9e32-e259d87ca43a
+  UnAuthenticatedRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Federated: cognito-identity.amazonaws.com
+            Action:
+              - 'sts:AssumeRoleWithWebIdentity'
+            Condition:
+              StringEquals:
+                'cognito-identity.amazonaws.com:aud': !Ref IdentityPool
+              'ForAnyValue:StringLike':
+                'cognito-identity.amazonaws.com:amr': unauthenticated
+      Policies:
+        - PolicyName: CognitoUnAuthenticatedPersonRekognitionPolicy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'mobileanalytics:PutEvents'
+                  - 'rekognition:CompareFaces'
+                  - 'rekognition:DetectFaces'
+                  - 'rekognition:DetectLabels'
+                  - 'rekognition:ListCollections'
+                  - 'rekognition:ListFaces'
+                  - 'rekognition:SearchFaces'
+                  - 'rekognition:SearchFacesByImage'
+                  - 'rekognition:DetectText'
+                  - 'rekognition:GetCelebrityInfo'
+                  - 'rekognition:RecognizeCelebrities'
+                  - 'rekognition:DetectModerationLabels'
+                  - 'rekognition:GetLabelDetection'
+                  - 'rekognition:GetFaceDetection'
+                  - 'rekognition:GetContentModeration'
+                  - 'rekognition:GetPersonTracking'
+                  - 'rekognition:GetCelebrityRecognition'
+                  - 'rekognition:GetFaceSearch'
+                  - 'rekognition:DescribeStreamProcessor'
+                  - 'rekognition:ListStreamProcessors'
+                  - 'dynamodb:BatchGetItem'
+                  - 'dynamodb:Describe*'
+                  - 'dynamodb:List*'
+                  - 'dynamodb:GetItem'
+                  - 'dynamodb:Query'
+                  - 'dynamodb:Scan'
+                Resource: '*'
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 9bbbd40b-f8c3-4a5c-a987-27c619f01397
+  AuthenticatedRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Federated: cognito-identity.amazonaws.com
+            Action:
+              - 'sts:AssumeRoleWithWebIdentity'
+            Condition:
+              StringEquals:
+                'cognito-identity.amazonaws.com:aud': !Ref IdentityPool
+              'ForAnyValue:StringLike':
+                'cognito-identity.amazonaws.com:amr': authenticated
+      Policies:
+        - PolicyName: CognitoAuthenticatedPersonRekognitionPolicy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'mobileanalytics:PutEvents'
+                  - 'rekognition:CompareFaces'
+                  - 'rekognition:DetectFaces'
+                  - 'rekognition:DetectLabels'
+                  - 'rekognition:ListCollections'
+                  - 'rekognition:ListFaces'
+                  - 'rekognition:SearchFaces'
+                  - 'rekognition:SearchFacesByImage'
+                  - 'rekognition:DetectText'
+                  - 'rekognition:GetCelebrityInfo'
+                  - 'rekognition:RecognizeCelebrities'
+                  - 'rekognition:DetectModerationLabels'
+                  - 'rekognition:GetLabelDetection'
+                  - 'rekognition:GetFaceDetection'
+                  - 'rekognition:GetContentModeration'
+                  - 'rekognition:GetPersonTracking'
+                  - 'rekognition:GetCelebrityRecognition'
+                  - 'rekognition:GetFaceSearch'
+                  - 'rekognition:DescribeStreamProcessor'
+                  - 'rekognition:ListStreamProcessors'
+                  - 'dynamodb:BatchGetItem'
+                  - 'dynamodb:Describe*'
+                  - 'dynamodb:List*'
+                  - 'dynamodb:GetItem'
+                  - 'dynamodb:Query'
+                  - 'dynamodb:Scan'
+                Resource: '*'
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 997a94f6-deda-43d4-94a6-9b0f8381f091
+  IdentityPoolRoleMapping:
+    Type: 'AWS::Cognito::IdentityPoolRoleAttachment'
+    Properties:
+      IdentityPoolId: !Ref IdentityPool
+      Roles:
+        unauthenticated: !GetAtt 
+          - UnAuthenticatedRole
+          - Arn
+        authenticated: !GetAtt 
+          - AuthenticatedRole
+          - Arn
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: d8730371-b98a-48a6-955d-79fddb5e8f72
+  RekognitionIndexLambdaRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      RoleName: !Sub RekognitionIndexLambdaRole
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/AWSLambdaExecute'
+        - 'arn:aws:iam::aws:policy/AmazonS3FullAccess'
+        - 'arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess'
+        - 'arn:aws:iam::aws:policy/AmazonRekognitionFullAccess'
+        - 'arn:aws:iam::aws:policy/AWSXrayWriteOnlyAccess'
+      Path: /
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: d6aa375a-ebf0-46fe-8cef-8b1087925dd0
+  Bucket:
+    Type: 'AWS::S3::Bucket'
+    DependsOn: BucketPermission
+    Properties:
+      BucketName: !Ref BucketName
+      NotificationConfiguration:
+        LambdaConfigurations:
+          - Event: 's3:ObjectCreated:*'
+            Function: !GetAtt 
+              - LambdaBuildIndexRekognition
+              - Arn
+          - Event: 's3:ObjectRemoved:*'
+            Function: !GetAtt 
+              - LambdaBuildIndexRekognition
+              - Arn
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 37e386f4-4c92-4367-860d-47d513243519
+  BucketPermission:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      Action: 'lambda:InvokeFunction'
+      FunctionName: !Ref LambdaBuildIndexRekognition
+      Principal: s3.amazonaws.com
+      SourceAccount: !Ref 'AWS::AccountId'
+      SourceArn: !Sub 'arn:aws:s3:::${BucketName}'
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: f512192f-6e65-4331-8450-a5879a075a57
+  LambdaBuildIndexRekognition:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      Handler: index.lambda_handler
+      Role: !GetAtt 
+        - RekognitionIndexLambdaRole
+        - Arn
+      Code:
+        ZipFile: >
+          import boto3
+
+          from decimal import Decimal
+
+          import json
+
+          import urllib
+
+
+          #print('Loading function')
+
+
+          rekognition = boto3.client('rekognition')
+
+
+          # --------------- Helper Functions to call Rekognition APIs
+          ------------------
+
+
+          def get_object_name(bucket, key):
+              response = boto3.client('s3').get_object_tagging(
+                  Bucket=bucket,
+                  Key=key
+              )
+              
+              name = "Unknown"
+              if('TagSet' in response):
+                  for tag in response['TagSet']:
+                      if(tag["Key"] == "Name" or tag["Key"] == "name"):
+                          name = tag["Value"]
+              
+              return name
+              
+          def add_face(bucket, key):
+              try:
+                  response = rekognition.create_collection(CollectionId='faces')
+              except Exception as e:
+                  pass
+
+              response = rekognition.index_faces(Image={"S3Object": {"Bucket": bucket, "Name": key}}, CollectionId="faces")
+
+              if("FaceRecords" in response):
+                  faceid = response["FaceRecords"][0]["Face"]["FaceId"]
+                  table = boto3.resource('dynamodb').Table('index-face')
+                  table.put_item(Item={'key': key, 'name': get_object_name(bucket,key), 'faceid': faceid})
+              return response
+
+          def delete_face(bucket, key):
+              table = boto3.resource('dynamodb').Table('index-face')
+              item = table.get_item(Key={'key': key})
+              faces=[]
+              print(json.dumps(item))
+              faces.append(item["Item"]["faceid"])
+              response = rekognition.delete_faces(CollectionId='faces',FaceIds=faces)
+              
+              # Sample code to write response to DynamoDB table 'MyTable' with 'PK' as Primary Key.
+              # Note: role used for executing this Lambda function should have write access to the table.
+              table = boto3.resource('dynamodb').Table('index-face')
+              table.delete_item(Key={'key': key})
+              return response
+
+
+          # --------------- Main handler ------------------
+
+
+
+          def lambda_handler(event, context):
+              '''Demonstrates S3 trigger that uses
+              Rekognition APIs to index faces in S3 Object.
+              '''
+              print("Received event: " + json.dumps(event, indent=2))
+
+              # Get the object from the event
+              bucket = event['Records'][0]['s3']['bucket']['name']
+              eventtype = event['Records'][0]['eventName']
+              name = "Chris Azer"
+              key = event['Records'][0]['s3']['object']['key']
+              try:
+                  if(eventtype == "ObjectCreated:Put"):
+                      # Calls rekognition API to index faces in S3 object and add dynamodb record
+                      response = add_face(bucket, key)
+
+                  if(eventtype == "ObjectRemoved:Delete"):
+                      # Calls rekognition API to index faces in S3 object and add dynamodb record
+                      response = delete_face(bucket, key)
+
+                  # Print response to console.
+                  print(response)
+
+                  return response
+              except Exception as e:
+                  print(e)
+                  print("Error processing object {} from bucket {}. ".format(key, bucket) +
+                        "Make sure your object and bucket exist and your bucket is in the same region as this function.")
+      Runtime: python3.6
+      Timeout: 25
+      TracingConfig:
+        Mode: Active
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: b9aa1544-953f-412a-9df4-7e0bcec3a9b4
+  IndexFaceTable:
+    Type: 'AWS::DynamoDB::Table'
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: key
+          AttributeType: S
+        - AttributeName: faceid
+          AttributeType: S
+      KeySchema:
+        - AttributeName: key
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: '5'
+        WriteCapacityUnits: '5'
+      TableName: index-face
+      GlobalSecondaryIndexes:
+        - IndexName: faceid-index
+          KeySchema:
+            - AttributeName: faceid
+              KeyType: HASH
+          Projection:
+            ProjectionType: ALL
+          ProvisionedThroughput:
+            ReadCapacityUnits: '5'
+            WriteCapacityUnits: '5'
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 455da004-04ba-47e6-8c68-590853b3c481
+Outputs:
+  identityPoolId:
+    Value: !Ref IdentityPool
+  unauthRoleArn:
+    Value: !GetAtt 
+      - UnAuthenticatedRole
+      - Arn
+  authRoleArn:
+    Value: !GetAtt 
+      - AuthenticatedRole
+      - Arn
+Metadata:
+  'AWS::CloudFormation::Designer':
+    be84fb71-4561-48ee-9e32-e259d87ca43a:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 60
+        'y': 90
+      z: 1
+      embeds: []
+    997a94f6-deda-43d4-94a6-9b0f8381f091:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 180
+        'y': 90
+      z: 1
+      embeds: []
+    9bbbd40b-f8c3-4a5c-a987-27c619f01397:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 60
+        'y': 210
+      z: 1
+      embeds: []
+    d8730371-b98a-48a6-955d-79fddb5e8f72:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 180
+        'y': 210
+      z: 1
+      embeds: []
+      isassociatedwith:
+        - be84fb71-4561-48ee-9e32-e259d87ca43a
+    d6aa375a-ebf0-46fe-8cef-8b1087925dd0:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 270
+        'y': 90
+      z: 1
+      embeds: []
+    b9aa1544-953f-412a-9df4-7e0bcec3a9b4:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 390
+        'y': 90
+      z: 1
+      embeds: []
+    455da004-04ba-47e6-8c68-590853b3c481:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 480
+        'y': 90
+      z: 1
+      embeds: []
+    f512192f-6e65-4331-8450-a5879a075a57:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 390
+        'y': 200
+      z: 1
+      embeds: []
+      isassociatedwith:
+        - b9aa1544-953f-412a-9df4-7e0bcec3a9b4
+    37e386f4-4c92-4367-860d-47d513243519:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 470
+        'y': 200
+      z: 1
+      embeds: []
+      dependson:
+        - f512192f-6e65-4331-8450-a5879a075a57
